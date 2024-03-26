@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { css } from '@emotion/react';
 import KanbanCard from './KanbanCard';
 import KanbanNewCard from './KanbanNewCard';
@@ -43,17 +43,17 @@ export default function KanbanColumn({
   setIsDragTarget,
   onDrop,
   onRemove,
-  cardList=[],
+  cardList = [],
   setDraggedItem,
-  canAddNew=false,
-  onAdd
+  canAddNew = false,
+  onAdd,
 }) {
-  const[showAdd,setShowAdd]=useState(false);
-  const handleAdd=(evt)=>{
+  const [showAdd, setShowAdd] = useState(false);
+  const handleAdd = (evt) => {
     setShowAdd(true);
   };
-  const handleSubmit=(newCard)=>{
-    onAdd&&onAdd(newCard);
+  const handleSubmit = (newCard) => {
+    onAdd && onAdd(newCard);
     setShowAdd(false);
   };
   return (
@@ -63,21 +63,21 @@ export default function KanbanColumn({
         evt.preventDefault();
         evt.dataTransfer.dropEffect = 'move';
         setIsDragTarget(true);
-      } }
+      }}
       onDragLeave={(evt) => {
         evt.preventDefault();
         evt.dataTransfer.dropEffect = 'none';
         setIsDragTarget(false);
-      } }
+      }}
       onDrop={(evt) => {
         evt.preventDefault();
         onDrop && onDrop(evt);
-      } }
+      }}
       onDragEnd={(evt) => {
         evt.preventDefault();
         setIsDragSource(false);
         setIsDragTarget(false);
-      } }
+      }}
       css={css`
         ${KanbanColumnStyles} 
         background-color:${bgColor};
@@ -85,12 +85,12 @@ export default function KanbanColumn({
     >
       <h2>
         {title}
-        {canAddNew&&<button onClick={handleAdd} disabled={showAdd}>&#8853; 添加新卡片</button>}
+        {canAddNew && <button onClick={handleAdd} disabled={showAdd}>&#8853; 添加新卡片</button>}
       </h2>
       <ul>
-        {canAddNew&&showAdd&&<KanbanNewCard onSubmit={handleSubmit}/>}
+        {canAddNew && showAdd && <KanbanNewCard onSubmit={handleSubmit} />}
         {cardList.map(
-          props=><KanbanCard onRemove={onRemove} key={props.title} onDragStart={()=>setDraggedItem(props)} {...props}/>
+          (props) => <KanbanCard onRemove={onRemove} key={props.title} onDragStart={() => setDraggedItem(props)} {...props} />,
         )}
       </ul>
     </section>

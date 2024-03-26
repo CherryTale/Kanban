@@ -9,7 +9,7 @@ export default function KanbanNewCard({ onSubmit }) {
     () => {
       inputElem.current.focus();
     },
-    []
+    [],
   );
 
   const handleChange = (evt) => {
@@ -17,7 +17,7 @@ export default function KanbanNewCard({ onSubmit }) {
   };
   const handleKeyDown = (evt) => {
     if (evt.key === 'Enter') {
-      const newCard={title,status:new Date().toString()}
+      const newCard = { title, status: new Date().toString() };
       onSubmit(newCard);
     }
   };
@@ -30,7 +30,8 @@ export default function KanbanNewCard({ onSubmit }) {
         &>input[type="text"]{
           width:80%;
         }
-      `}>
+      `}
+      >
         <input type="text" value={title} ref={inputElem} onChange={handleChange} onKeyDown={handleKeyDown} />
       </div>
     </li>
