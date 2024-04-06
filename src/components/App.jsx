@@ -1,27 +1,28 @@
-import logo from './logo.svg';
+import { css } from '@emotion/react';
 import './App.css';
 import React, { useEffect, useState } from 'react';
+import { Button, Switch } from 'antd';
 import KanbanBoard, { COLUMN_KEY_TODO, COLUMN_KEY_ONGOING, COLUMN_KEY_DONE } from './KanbanBoard';
 import AdminContext from '../context/AdminContexts';
+import { fakeData } from './FakeData';
+import logo from './logo.svg';
 
 const DATA_STORE_KEY = 'kanban-data-store';
 
+const projectNameStyles = css`
+  padding: 0.8rem;
+  margin: 1rem;
+  border-radius: 1.8rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+`;
+
 function App() {
-  const [todoList, setTodoList] = useState([
-    { title: '开发任务-1', status: '2022-05-22 18:15' },
-    { title: '开发任务-3', status: '2022-05-22 18:15' },
-    { title: '开发任务-5', status: '2022-05-22 18:15' },
-    { title: '测试任务-3', status: '2022-05-22 18:15' },
-  ]);
-  const [ongoingList, setOngoingList] = useState([
-    { title: '开发任务-4', status: '2022-05-22 18:15' },
-    { title: '开发任务-6', status: '2022-05-22 18:15' },
-    { title: '测试任务-2', status: '2022-05-22 18:15' },
-  ]);
-  const [doneList, setDoneList] = useState([
-    { title: '开发任务-2', status: '2022-05-22 18:15' },
-    { title: '测试任务-1', status: '2022-05-22 18:15' },
-  ]);
+  const [todoList, setTodoList] = useState([]);
+  const [ongoingList, setOngoingList] = useState([]);
+  const [doneList, setDoneList] = useState([]);
+  const [projectList, setProjectList] = useState([]);
+  const [currentProject, setCurrentProject] = useState(0);
   const updaters = {
     [COLUMN_KEY_TODO]: setTodoList,
     [COLUMN_KEY_ONGOING]: setOngoingList,
@@ -38,60 +39,94 @@ function App() {
     );
   };
   const [isAdmin, setIsAdmin] = useState(false);
-  const handleToggleAdmin = (evt) => {
-    setIsAdmin(!isAdmin);
-  };
-
   const [isLoading, setIsLoading] = useState(true);
   useEffect(
     () => {
       const data = window.localStorage.getItem(DATA_STORE_KEY);
       setTimeout(
         () => {
-          if (data) {
-            const KanbanColumnData = JSON.parse(data);
-            setTodoList(KanbanColumnData.todoList);
-            setOngoingList(KanbanColumnData.ongoingList);
-            setDoneList(KanbanColumnData.doneList);
+          if (!data) {
+            var KanbanData = fakeData;
+            window.localStorage.setItem(DATA_STORE_KEY, JSON.stringify(KanbanData));
+          } else {
+            var KanbanData = JSON.parse(data);
           }
+          setProjectList(KanbanData.map((item) => item.name));
+          setTodoList(KanbanData[currentProject].todolist);
+          setOngoingList(KanbanData[currentProject].ongoinglist);
+          setDoneList(KanbanData[currentProject].donelist);
+
           setIsLoading(false);
         },
         1000,
       );
     },
-    [],
+    [currentProject],
   );
   const handleSaveAll = () => {
-    const data = JSON.stringify({
-      todoList,
-      ongoingList,
-      doneList,
-    });
-    window.localStorage.setItem(DATA_STORE_KEY, data);
+    const updatedProject = {
+      name: projectList[currentProject],
+      todolist: todoList,
+      ongoinglist: ongoingList,
+      donelist: doneList,
+    };
+    let data = window.localStorage.getItem(DATA_STORE_KEY);
+    if (data) {
+      data = JSON.parse(data);
+      data[currentProject] = updatedProject;
+    } else {
+      data = [updatedProject];
+    }
+    window.localStorage.setItem(DATA_STORE_KEY, JSON.stringify(data));
   };
 
   return (
     <div className="App">
       <header className="App-header">
-        <h1>
-          我的看板
-          <button onClick={handleSaveAll}>保存所有卡片</button>
-          <label>
-            <input type="checkbox" value={isAdmin} onChange={handleToggleAdmin} />
+
+        <span className="name-logo">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h2 className="project-name">看板小程序</h2>
+        </span>
+
+        <span className="tag-container">
+          <span className="tag">项目</span>
+          <span className="tag">人员</span>
+          <span className="tag">标签</span>
+        </span>
+
+        <span className="control-panel">
+          <Button onClick={handleSaveAll} shape="round" size="small" type="primary">保存当前项目</Button>
+          <div>
             管理员模式
-          </label>
-        </h1>
-        <img src={logo} className="App-logo" alt="logo" />
+            <Switch onChange={() => { setIsAdmin(!isAdmin); }} />
+          </div>
+        </span>
+
       </header>
       <AdminContext.Provider value={isAdmin}>
-        <KanbanBoard
-          isLoading={isLoading}
-          todoList={todoList}
-          ongoingList={ongoingList}
-          doneList={doneList}
-          onAdd={handleAdd}
-          onRemove={handleRemove}
-        />
+        <footer className="App-footer">
+          <ul className="project-selector">
+            {projectList.map((item, index) => (
+              <li
+                key={index}
+                onClick={() => { setIsLoading(true); setCurrentProject(index); }}
+                css={projectNameStyles}
+                style={{ backgroundColor: index === currentProject ? '#fff' : '#888' }}
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+          <KanbanBoard
+            isLoading={isLoading}
+            todoList={todoList}
+            ongoingList={ongoingList}
+            doneList={doneList}
+            onAdd={handleAdd}
+            onRemove={handleRemove}
+          />
+        </footer>
       </AdminContext.Provider>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { css } from '@emotion/react';
+import { Button, Modal } from 'antd';
 import AdminContext from '../context/AdminContexts';
 
 export const kanbanCardStyles = css`
@@ -16,14 +17,23 @@ export const kanbanCardStyles = css`
   }
 `;
 export const kanbanCardTitleStyles = css`
-  min-height:3rem;
+  font-size:1rem;
+  font-weight:bold;
 `;
-
+const timeStyles = css`
+  text-align: right;
+  font-size: 0.6rem;
+  color: #333;
+`;
+const DescribeStyles = css`
+  font-size:0.8rem;
+  
+`;
 export default function KanbanCard({
-  title, status, onDragStart, onRemove,
+  title, createTime, onDragStart, onRemove, deadline, describe,
 }) {
-  const [displayTime, setDisplayTime] = useState(status);
-
+  const [displayTime, setDisplayTime] = useState(createTime);
+  const [showDetail, setShowDetail] = useState(false);
   const isAdmin = useContext(AdminContext);
 
   useEffect(
@@ -34,7 +44,7 @@ export default function KanbanCard({
       const UPDATE_INTERVAL = MINUTE;
 
       const updateDisplayTime = () => {
-        const timePassed = new Date() - new Date(status);
+        const timePassed = new Date() - new Date(createTime);
         let relativeTime = '刚刚';
         if (MINUTE <= timePassed && timePassed < HOUR) {
           relativeTime = `${Math.ceil(timePassed / MINUTE)} 分钟前`;
@@ -52,7 +62,7 @@ export default function KanbanCard({
         clearInterval(intervalId);
       };
     },
-    [status],
+    [],
   );
 
   const handleDragStart = (evt) => {
@@ -62,19 +72,41 @@ export default function KanbanCard({
   };
 
   return (
-    <li css={kanbanCardStyles} draggable onDragStart={handleDragStart}>
+    <li css={kanbanCardStyles} draggable onDragStart={handleDragStart} onClick={() => { setShowDetail(true); }}>
       <div css={kanbanCardTitleStyles}>{title}</div>
-      <div
-        css={css`
-        text-align: right;
-        font-size: 0.8rem;
-        color: #333;
-      `}
-        title={status}
-      >
-        {displayTime}
-        {isAdmin && onRemove && <button onClick={() => onRemove({ title })}>X</button>}
+      <div css={DescribeStyles}>{describe}</div>
+      <div css={timeStyles} title={createTime}>
+        {`${displayTime}创建`}
       </div>
+      <div css={timeStyles} title={deadline}>
+        {deadline && `${deadline}截止`}
+        {isAdmin && onRemove && <Button danger onClick={() => onRemove({ title })} shape="circle" size="small">X</Button>}
+      </div>
+      <Modal
+        open={showDetail}
+        destroyOnClose
+        centered
+        footer={null}
+        title="任务详情"
+        onCancel={(evt) => { setShowDetail(false); evt.stopPropagation(); }}
+      >
+        <div>
+          标题：
+          {title}
+        </div>
+        <div>
+          描述：
+          {describe}
+        </div>
+        <div>
+          截止日期：
+          {deadline}
+        </div>
+        <div>
+          负责人：
+          {}
+        </div>
+      </Modal>
     </li>
   );
 }

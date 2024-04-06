@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { css } from '@emotion/react';
+import { Spin } from 'antd';
 import KanbanColumn from './KanbanColumn';
 
 const KanbanBoardStyles = css`
-    flex:10;
     display:flex;
     flex-direction:row;
-    gap:1rem;
-    margin:0 1rem 1rem;
+    height:100%;
+    width:100%;
+    gap:0.5rem;
+    margin:0.5rem;
   `;
 
 const COLUMN_BG_COLORS = {
-  loading: '#E3E3E3',
   todo: '#C9AF97',
   ongoing: '#FFE799',
   done: '#C0E8BA',
@@ -42,7 +43,7 @@ export default function KanbanBoard({
   return (
     <main css={KanbanBoardStyles}>
       {isLoading ? (
-        <KanbanColumn title="读取中..." bgColor={COLUMN_BG_COLORS.loading} />
+        <Spin size="large" />
       ) : (
         <>
           <KanbanColumn
@@ -53,8 +54,8 @@ export default function KanbanBoard({
             onDrop={handleDrop}
             cardList={todoList}
             setDraggedItem={setDraggedItem}
-            canAddNew
             onAdd={onAdd.bind(null, COLUMN_KEY_TODO)}
+            onRemove={onRemove.bind(null, COLUMN_KEY_TODO)}
           />
           <KanbanColumn
             bgColor={COLUMN_BG_COLORS.ongoing}
@@ -64,6 +65,8 @@ export default function KanbanBoard({
             onDrop={handleDrop}
             cardList={ongoingList}
             setDraggedItem={setDraggedItem}
+            onAdd={onAdd.bind(null, COLUMN_KEY_ONGOING)}
+            onRemove={onRemove.bind(null, COLUMN_KEY_ONGOING)}
           />
           <KanbanColumn
             bgColor={COLUMN_BG_COLORS.done}
@@ -71,9 +74,10 @@ export default function KanbanBoard({
             setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_DONE : null)}
             setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_DONE : null)}
             onDrop={handleDrop}
-            onRemove={onRemove.bind(null, COLUMN_KEY_DONE)}
             cardList={doneList}
             setDraggedItem={setDraggedItem}
+            onAdd={onAdd.bind(null, COLUMN_KEY_DONE)}
+            onRemove={onRemove.bind(null, COLUMN_KEY_DONE)}
           />
         </>
       )}
