@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { css } from '@emotion/react';
 import {
-  Button, Modal, Form, Input, DatePicker,
+  Button, Modal, Form, Input, DatePicker,Select
 } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import KanbanCard from './KanbanCard';
@@ -44,6 +44,7 @@ export default function KanbanColumn({
   onDrop,
   onRemove,
   cardList = [],
+  staffList=[],
   setDraggedItem,
   onAdd,
 }) {
@@ -124,6 +125,12 @@ export default function KanbanColumn({
               name="deadline"
             >
               <DatePicker />
+            </Form.Item>
+            <Form.Item
+              label="负责人"
+              name="staff"
+            >
+              <Select allowClear options={staffList.map(item=>{return {value:item.name,label:<span>{item.name}</span>}})}/>
             </Form.Item>
           </Form>
         </Modal>

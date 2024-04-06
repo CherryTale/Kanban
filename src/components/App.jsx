@@ -3,6 +3,8 @@ import './App.css';
 import React, { useEffect, useState } from 'react';
 import { Button, Switch } from 'antd';
 import KanbanBoard, { COLUMN_KEY_TODO, COLUMN_KEY_ONGOING, COLUMN_KEY_DONE } from './KanbanBoard';
+import StaffBoard from './StaffBoard.jsx'
+import TagBoard from './TagBoard.jsx'
 import AdminContext from '../context/AdminContexts';
 import { fakeData } from './FakeData';
 import logo from './logo.svg';
@@ -22,7 +24,10 @@ function App() {
   const [ongoingList, setOngoingList] = useState([]);
   const [doneList, setDoneList] = useState([]);
   const [projectList, setProjectList] = useState([]);
+  const [staffList, setStaffList] = useState([]);
+  const [tagList, setTagList] = useState([]);
   const [currentProject, setCurrentProject] = useState(0);
+  const [currentTab,setCurrentTab]=useState("project")
   const updaters = {
     [COLUMN_KEY_TODO]: setTodoList,
     [COLUMN_KEY_ONGOING]: setOngoingList,
@@ -43,19 +48,21 @@ function App() {
   useEffect(
     () => {
       const data = window.localStorage.getItem(DATA_STORE_KEY);
+      if (!data) {
+        var KanbanData = fakeData;
+        window.localStorage.setItem(DATA_STORE_KEY, JSON.stringify(KanbanData));
+      } else {
+        var KanbanData = JSON.parse(data);
+      }
+      setProjectList(KanbanData.map((item) => item.name));
+      setTodoList(KanbanData[currentProject].todolist);
+      setOngoingList(KanbanData[currentProject].ongoinglist);
+      setDoneList(KanbanData[currentProject].donelist);
+      setStaffList(KanbanData[currentProject].stafflist);
+      setTagList(KanbanData[currentProject].taglist);
+
       setTimeout(
         () => {
-          if (!data) {
-            var KanbanData = fakeData;
-            window.localStorage.setItem(DATA_STORE_KEY, JSON.stringify(KanbanData));
-          } else {
-            var KanbanData = JSON.parse(data);
-          }
-          setProjectList(KanbanData.map((item) => item.name));
-          setTodoList(KanbanData[currentProject].todolist);
-          setOngoingList(KanbanData[currentProject].ongoinglist);
-          setDoneList(KanbanData[currentProject].donelist);
-
           setIsLoading(false);
         },
         1000,
@@ -89,10 +96,10 @@ function App() {
           <h2 className="project-name">看板小程序</h2>
         </span>
 
-        <span className="tag-container">
-          <span className="tag">项目</span>
-          <span className="tag">人员</span>
-          <span className="tag">标签</span>
+        <span className="tab-container">
+          <span className="tab" onClick={()=>{setCurrentTab("project")}}>项目</span>
+          <span className="tab" onClick={()=>{setCurrentTab("staff")}}>人员</span>
+          <span className="tab" onClick={()=>{setCurrentTab("tag")}}>标签</span>
         </span>
 
         <span className="control-panel">
@@ -118,14 +125,21 @@ function App() {
               </li>
             ))}
           </ul>
-          <KanbanBoard
-            isLoading={isLoading}
-            todoList={todoList}
-            ongoingList={ongoingList}
-            doneList={doneList}
-            onAdd={handleAdd}
-            onRemove={handleRemove}
-          />
+          {currentTab==="project"?
+            <KanbanBoard
+              isLoading={isLoading}
+              todoList={todoList}
+              ongoingList={ongoingList}
+              doneList={doneList}
+              staffList={staffList}
+              onAdd={handleAdd}
+              onRemove={handleRemove}
+            />
+            :currentTab==="staff"?
+              <StaffBoard list={staffList}/>
+            :
+              <TagBoard list={tagList}/>
+          }
         </footer>
       </AdminContext.Provider>
     </div>

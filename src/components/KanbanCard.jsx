@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import { Button, Modal } from 'antd';
 import AdminContext from '../context/AdminContexts';
 
-export const kanbanCardStyles = css`
+const kanbanCardStyles = css`
   margin-bottom: 1rem;
   padding: 0.6rem 1rem;
   border: 1px solid gray;
@@ -16,7 +16,8 @@ export const kanbanCardStyles = css`
     box-shadow: 0 0.2rem 0.2rem rgba(0,0,0,0.2), inset 0 1px #fff;
   }
 `;
-export const kanbanCardTitleStyles = css`
+const kanbanCardTitleStyles = css`
+  display:inline;
   font-size:1rem;
   font-weight:bold;
 `;
@@ -27,10 +28,20 @@ const timeStyles = css`
 `;
 const DescribeStyles = css`
   font-size:0.8rem;
-  
 `;
+const headerStyles=css`
+  display:flex;
+  justify-content:space-between;
+`
+const staffStyles=css`
+  font-size:0.8rem;
+`
+const footerStyles=css`
+
+`
+
 export default function KanbanCard({
-  title, createTime, onDragStart, onRemove, deadline, describe,
+  title, createTime, onDragStart, onRemove, deadline, describe, staff
 }) {
   const [displayTime, setDisplayTime] = useState(createTime);
   const [showDetail, setShowDetail] = useState(false);
@@ -73,15 +84,24 @@ export default function KanbanCard({
 
   return (
     <li css={kanbanCardStyles} draggable onDragStart={handleDragStart} onClick={() => { setShowDetail(true); }}>
-      <div css={kanbanCardTitleStyles}>{title}</div>
+
+      <div css={headerStyles}>
+        <div css={kanbanCardTitleStyles}>{title}</div>
+        <div css={staffStyles}>{staff}</div>
+      </div>
+
       <div css={DescribeStyles}>{describe}</div>
-      <div css={timeStyles} title={createTime}>
-        {`${displayTime}创建`}
+
+      <div css={footerStyles}>
+        <div css={timeStyles} title={createTime}>
+          {`${displayTime}创建`}
+        </div>
+        <div css={timeStyles} title={deadline}>
+          {deadline && `${deadline}截止`}
+        </div>
       </div>
-      <div css={timeStyles} title={deadline}>
-        {deadline && `${deadline}截止`}
-        {isAdmin && onRemove && <Button danger onClick={() => onRemove({ title })} shape="circle" size="small">X</Button>}
-      </div>
+      {isAdmin && onRemove && <Button style={{marginTop:"0.6rem",width:"100%"}} danger onClick={() => onRemove({ title })} shape="round" size="small">删除</Button>}
+      
       <Modal
         open={showDetail}
         destroyOnClose
@@ -104,7 +124,7 @@ export default function KanbanCard({
         </div>
         <div>
           负责人：
-          {}
+          {staff}
         </div>
       </Modal>
     </li>
