@@ -47,12 +47,12 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   useEffect(
     () => {
+      let KanbanData = fakeData;
       const data = window.localStorage.getItem(DATA_STORE_KEY);
       if (!data) {
-        var KanbanData = fakeData;
         window.localStorage.setItem(DATA_STORE_KEY, JSON.stringify(KanbanData));
       } else {
-        var KanbanData = JSON.parse(data);
+        KanbanData = JSON.parse(data);
       }
       setProjectList(KanbanData.map((item) => item.name));
       setTodoList(KanbanData[currentProject].todolist);
