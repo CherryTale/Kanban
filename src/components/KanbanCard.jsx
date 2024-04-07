@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState,useRef } from 'react';
 import { css } from '@emotion/react';
 import { Button, Modal } from 'antd';
 import AdminContext from '../context/AdminContexts';
@@ -11,6 +11,7 @@ const kanbanCardStyles = css`
   list-style: none;
   background-color: rgba(255, 255, 255, 0.4);
   text-align: left;
+  position: relative;
 
   &:hover{
     box-shadow: 0 0.2rem 0.2rem rgba(0,0,0,0.2), inset 0 1px #fff;
@@ -20,6 +21,9 @@ const kanbanCardTitleStyles = css`
   display:inline;
   font-size:1rem;
   font-weight:bold;
+  max-width:12vw;
+  overflow:hidden;
+  text-overflow:ellipsis;
 `;
 const timeStyles = css`
   text-align: right;
@@ -35,20 +39,49 @@ const headerStyles=css`
 `
 const staffStyles=css`
   font-size:0.8rem;
+  display:flex;
+  align-items:center;
+  &>img{
+    height:1.5rem;
+    margin-right:4px;
+  }
+`
+const timeContainer=css`
+  min-width:5rem;
+`
+const tagContainer=css`
+  width:100%;
 `
 const footerStyles=css`
-
+  margin-top:0.6rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+`
+const tagStyles=css`
+  font-size:0.8rem;
+  white-space:nowrap;
+  margin:1px 2px;
+  padding:1px 4px;
+  border-radius:0.8rem;
 `
 
 export default function KanbanCard({
-  title, createTime, onDragStart, onRemove, deadline, describe, staff
+  title, createTime, onDragStart, onRemove, deadline, describe, staff, staffList,tag, tagList
 }) {
   const [displayTime, setDisplayTime] = useState(createTime);
   const [showDetail, setShowDetail] = useState(false);
   const isAdmin = useContext(AdminContext);
+  const imgRef=useRef(null);
 
   useEffect(
     () => {
+      if(staff){
+        imgRef.current.src=staffList.filter((item)=>{
+          return item.name===staff;
+        })[0].avatar
+      }
+      
       const MINUTE = 60 * 1000;
       const HOUR = 60 * MINUTE;
       const DAY = 24 * HOUR;
@@ -82,26 +115,55 @@ export default function KanbanCard({
     onDragStart && onDragStart(evt);
   };
 
+  let filtedList=[];
+  if(tag){
+    const map={};
+    for (const obj of tagList){
+      map[obj.name]=obj;
+    }
+    filtedList=tag.map(item=>map[item]);
+  }
+
   return (
     <li css={kanbanCardStyles} draggable onDragStart={handleDragStart} onClick={() => { setShowDetail(true); }}>
 
       <div css={headerStyles}>
-        <div css={kanbanCardTitleStyles}>{title}</div>
-        <div css={staffStyles}>{staff}</div>
+        <div style={{whiteSpace:"nowrap"}} css={kanbanCardTitleStyles}>{title}</div>
+        {staff&&
+          <div css={staffStyles}>
+            <img ref={imgRef}/>
+            <span>{staff}</span>
+          </div>
+        }
       </div>
 
-      <div css={DescribeStyles}>{describe}</div>
+      {describe&&<div css={DescribeStyles}>{describe}</div>}
 
       <div css={footerStyles}>
-        <div css={timeStyles} title={createTime}>
-          {`${displayTime}创建`}
+        <div css={tagContainer}>
+          {filtedList.map((item)=>{return (
+            <span
+              key={item.name}
+              css={tagStyles}
+              style={{backgroundColor:item.color}}
+              title={item.describe}
+            >
+              {item.name}
+            </span>
+          )})}
         </div>
-        <div css={timeStyles} title={deadline}>
-          {deadline && `${deadline}截止`}
+        <div css={timeContainer}>
+          <div css={timeStyles} title={createTime}>
+            {`${displayTime}创建`}
+          </div>
+          {deadline&&
+            <div css={timeStyles} title={deadline}>
+              {deadline && `${deadline}截止`}
+            </div>
+          }
         </div>
       </div>
-      {isAdmin && onRemove && <Button style={{marginTop:"0.6rem",width:"100%"}} danger onClick={() => onRemove({ title })} shape="round" size="small">删除</Button>}
-      
+      {isAdmin && onRemove && <Button style={{position:"absolute",bottom:"0.6rem",right:"1rem"}} danger onClick={() => onRemove({ title })} shape="circle" size="small">X</Button>}
       <Modal
         open={showDetail}
         destroyOnClose
@@ -125,6 +187,10 @@ export default function KanbanCard({
         <div>
           负责人：
           {staff}
+        </div>
+        <div>
+          标签：
+          {tag&&tag.join("，")}
         </div>
       </Modal>
     </li>

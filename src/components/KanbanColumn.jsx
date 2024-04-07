@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { css } from '@emotion/react';
 import {
-  Button, Modal, Form, Input, DatePicker,Select
+  Button, Modal, Form, Input, DatePicker,Select,Checkbox
 } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import KanbanCard from './KanbanCard';
@@ -44,7 +44,8 @@ export default function KanbanColumn({
   onDrop,
   onRemove,
   cardList = [],
-  staffList=[],
+  staffList,
+  tagList,
   setDraggedItem,
   onAdd,
 }) {
@@ -60,6 +61,7 @@ export default function KanbanColumn({
     if (values.deadline) {
       values.deadline = values.deadline.format('MM/DD/YYYY');
     }
+    console.log(values);
     onAdd({ ...values, createTime: new Date().toString() });
   };
   return (
@@ -132,10 +134,33 @@ export default function KanbanColumn({
             >
               <Select allowClear options={staffList.map(item=>{return {value:item.name,label:<span>{item.name}</span>}})}/>
             </Form.Item>
+            <Form.Item
+              label="标签"
+              name="tag"
+            >
+              <Checkbox.Group
+                options={tagList.map((item,index)=>{
+                  return {
+                    label:<span style={{fontSize:"0.8rem",padding:"2px 4px",backgroundColor:item.color,borderRadius:"1rem"}}>{item.name}</span>,
+                    value:item.name
+                  }
+                })}
+              />
+            </Form.Item>
           </Form>
         </Modal>
         {cardList.map(
-          (props) => <KanbanCard onRemove={onRemove} key={props.title} onDragStart={() => setDraggedItem(props)} {...props} />,
+          (props) => {
+            return (
+            <KanbanCard
+              onRemove={onRemove}
+              key={props.title}
+              onDragStart={() => setDraggedItem(props)}
+              {...props}
+              staffList={staffList}
+              tagList={tagList}
+            />)
+          }
         )}
       </ul>
       <Button

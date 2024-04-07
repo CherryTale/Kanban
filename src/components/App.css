@@ -4,6 +4,7 @@
   height: 100vh;
   text-align: center;
   min-width: 10rem;
+  background-color: #eee;
 }
   
 @media (prefers-reduced-motion: no-preference) {
@@ -53,10 +54,11 @@
   display: flex;
 }
 .App-logo{
-  width: 8vw;
+  width:6rem;
 }
 .project-name{
   margin: auto;
+  white-space: nowarp;
 }
 .tab-container{
   width: 50vw;
@@ -74,7 +76,8 @@
 }
 .project-selector{
   height: 100%;
-  width: 20vw;
+  min-width: 20vw;
+  max-width: 40vw;
   background-color: #3a404b;
   list-style: none;
   margin: 0;

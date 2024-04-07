@@ -13,6 +13,10 @@ const containerStyles=css`
         margin-top:1rem;
         margin-left:1rem;
         margin-right:1rem;
+        background-color:#fff;
+        &:hover{
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
         &>div{
             display: flex;
             align-items: center;

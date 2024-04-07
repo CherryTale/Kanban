@@ -104,7 +104,7 @@ function App() {
 
         <span className="control-panel">
           <Button onClick={handleSaveAll} shape="round" size="small" type="primary">保存当前项目</Button>
-          <div>
+          <div style={{fontSize:"0.8rem",marginTop:"4px"}}>
             管理员模式
             <Switch onChange={() => { setIsAdmin(!isAdmin); }} />
           </div>
@@ -132,6 +132,7 @@ function App() {
               ongoingList={ongoingList}
               doneList={doneList}
               staffList={staffList}
+              tagList={tagList}
               onAdd={handleAdd}
               onRemove={handleRemove}
             />
