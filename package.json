@@ -1,7 +1,7 @@
 {
   "name": "yeah-my-kanban",
   "version": "1.0.0",
-  "homepage": ".",
+  "homepage": "https://cherrytale.github.io/Kanban",
   "description": "",
   "main": "index.js",
   "scripts": {
