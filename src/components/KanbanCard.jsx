@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState,useRef } from 'react';
 import { css } from '@emotion/react';
 import { Button, Modal } from 'antd';
-import AdminContext from '../context/AdminContexts';
 
 const kanbanCardStyles = css`
   margin-bottom: 1rem;
@@ -71,7 +70,6 @@ export default function KanbanCard({
 }) {
   const [displayTime, setDisplayTime] = useState(createTime);
   const [showDetail, setShowDetail] = useState(false);
-  const isAdmin = useContext(AdminContext);
   const imgRef=useRef(null);
 
   useEffect(
@@ -163,12 +161,11 @@ export default function KanbanCard({
           }
         </div>
       </div>
-      {isAdmin && onRemove && <Button style={{position:"absolute",bottom:"0.6rem",right:"1rem"}} danger onClick={() => onRemove({ title })} shape="circle" size="small">X</Button>}
       <Modal
         open={showDetail}
         destroyOnClose
         centered
-        footer={null}
+        footer={<Button danger onClick={() => onRemove({ title })}>删除卡片</Button>}
         title="任务详情"
         onCancel={(evt) => { setShowDetail(false); evt.stopPropagation(); }}
       >

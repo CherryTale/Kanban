@@ -5,7 +5,6 @@ import { Button, Switch } from 'antd';
 import KanbanBoard, { COLUMN_KEY_TODO, COLUMN_KEY_ONGOING, COLUMN_KEY_DONE } from './KanbanBoard';
 import StaffBoard from './StaffBoard.jsx'
 import TagBoard from './TagBoard.jsx'
-import AdminContext from '../context/AdminContexts';
 import { fakeData } from './FakeData';
 import logo from './logo.svg';
 
@@ -43,7 +42,6 @@ function App() {
       ),
     );
   };
-  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(
     () => {
@@ -105,46 +103,41 @@ function App() {
         </span>
 
         <span className="control-panel">
-          <Button onClick={handleSaveAll} shape="round" size="small" type="primary">保存当前项目</Button>
-          <div style={{fontSize:"0.8rem",marginTop:"4px"}}>
-            管理员模式
-            <Switch onChange={() => { setIsAdmin(!isAdmin); }} />
-          </div>
+          <Button onClick={handleSaveAll} shape="round" type="primary">保存当前项目</Button>
         </span>
 
       </header>
-      <AdminContext.Provider value={isAdmin}>
-        <footer className="App-footer">
-          <ul className="project-selector">
-            {projectList.map((item, index) => (
-              <li
-                key={index}
-                onClick={() => { setIsLoading(true); setCurrentProject(index); }}
-                css={projectNameStyles}
-                style={{ backgroundColor: index === currentProject ? '#fff' : '#888' }}
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-          {currentTab==="project"?
-            <KanbanBoard
-              isLoading={isLoading}
-              todoList={todoList}
-              ongoingList={ongoingList}
-              doneList={doneList}
-              staffList={staffList}
-              tagList={tagList}
-              onAdd={handleAdd}
-              onRemove={handleRemove}
-            />
-            :currentTab==="staff"?
-              <StaffBoard list={staffList}/>
-            :
-              <TagBoard list={tagList}/>
-          }
-        </footer>
-      </AdminContext.Provider>
+
+      <footer className="App-footer">
+        <ul className="project-selector">
+          {projectList.map((item, index) => (
+            <li
+              key={index}
+              onClick={() => { setIsLoading(true); setCurrentProject(index); }}
+              css={projectNameStyles}
+              style={{ backgroundColor: index === currentProject ? '#fff' : '#888' }}
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+        {currentTab==="project"?
+          <KanbanBoard
+            isLoading={isLoading}
+            todoList={todoList}
+            ongoingList={ongoingList}
+            doneList={doneList}
+            staffList={staffList}
+            tagList={tagList}
+            onAdd={handleAdd}
+            onRemove={handleRemove}
+          />
+          :currentTab==="staff"?
+            <StaffBoard list={staffList}/>
+          :
+            <TagBoard list={tagList}/>
+        }
+      </footer>
     </div>
   );
 }
