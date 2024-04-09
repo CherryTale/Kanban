@@ -76,6 +76,8 @@ function App() {
       todolist: todoList,
       ongoinglist: ongoingList,
       donelist: doneList,
+      stafflist:staffList,
+      taglist:tagList,
     };
     let data = window.localStorage.getItem(DATA_STORE_KEY);
     if (data) {
