@@ -7,21 +7,6 @@
   background-color: #eee;
 }
   
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .App-header {
   display: flex;
   align-items: center;
@@ -54,7 +39,8 @@
   display: flex;
 }
 .App-logo{
-  width:6rem;
+  height: 6vh;
+  margin-left: 1rem;
 }
 .project-name{
   margin: auto;

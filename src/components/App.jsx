@@ -6,7 +6,7 @@ import KanbanBoard, { COLUMN_KEY_TODO, COLUMN_KEY_ONGOING, COLUMN_KEY_DONE } fro
 import StaffBoard from './StaffBoard.jsx'
 import TagBoard from './TagBoard.jsx'
 import { fakeData } from './FakeData';
-import logo from './logo.svg';
+import logo from './logo.png';
 
 const DATA_STORE_KEY = 'kanban-data-store';
 
@@ -93,7 +93,7 @@ function App() {
 
         <span className="name-logo">
           <img src={logo} className="App-logo" alt="logo" />
-          <h2 className="project-name">看板小程序</h2>
+          <h2 className="project-name">SprintFlow</h2>
         </span>
 
         <span className="tab-container">
