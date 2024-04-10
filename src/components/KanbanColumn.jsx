@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { css } from '@emotion/react';
-import {
-  Button, Modal, Form, Input, DatePicker,Select,Checkbox
-} from 'antd';
-import { useForm } from 'antd/es/form/Form';
+import { Button, Modal, Form, Input, DatePicker,Select,Checkbox } from 'antd';
+//import { useForm } from 'antd/es/form/Form';
+const { useForm } = Form;
+
 import KanbanCard from './KanbanCard';
 
 const KanbanColumnStyles = css`

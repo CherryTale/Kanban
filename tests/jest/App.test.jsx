@@ -1,8 +1,13 @@
+/**
+ * @jest-environment jsdom
+ */
 import { render, screen } from '@testing-library/react';
-import App from './App';
+import React from 'react';
+import App from '../../src/components/App';
+import '@testing-library/jest-dom'
 
-test('renders learn react link', () => {
+test('渲染保存当前项目按钮', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
+  const linkElement = screen.getByText(/保存当前项目/i);
   expect(linkElement).toBeInTheDocument();
 });
