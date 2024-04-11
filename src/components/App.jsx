@@ -1,15 +1,15 @@
 import { css } from '@emotion/react';
 import './App.css';
 import React, { useEffect, useState } from 'react';
-import { Button, Switch } from 'antd';
+import { Button } from 'antd';
 import KanbanBoard, { COLUMN_KEY_TODO, COLUMN_KEY_ONGOING, COLUMN_KEY_DONE } from './KanbanBoard';
 import StaffBoard from './StaffBoard.jsx'
 import TagBoard from './TagBoard.jsx'
 import { fakeData } from './FakeData';
 import logo from './logo.png';
+import { configureStore } from '@reduxjs/toolkit';
 
 const DATA_STORE_KEY = 'kanban-data-store';
-
 const projectNameStyles = css`
   padding: 0.8rem;
   margin: 1rem;
@@ -19,6 +19,27 @@ const projectNameStyles = css`
 `;
 
 function App() {
+  const rootReducer=(state={data:[]},action)=>{
+    switch (action.type){
+      case 'READ':
+        let KanbanData = fakeData;
+        const rawData = window.localStorage.getItem(DATA_STORE_KEY);
+        if (!rawData) {
+          window.localStorage.setItem(DATA_STORE_KEY, JSON.stringify(KanbanData));
+        } else {
+          KanbanData = JSON.parse(rawData);
+        }
+        return {data:KanbanData};
+      case 'WRITE':
+        let data = JSON.parse(window.localStorage.getItem(DATA_STORE_KEY));
+        data[action.payload.currentProject] = action.payload.updatedProject;
+        window.localStorage.setItem(DATA_STORE_KEY, JSON.stringify(data));
+    }
+  }
+  const store=configureStore({
+    reducer:rootReducer,
+  })
+
   const [todoList, setTodoList] = useState([]);
   const [ongoingList, setOngoingList] = useState([]);
   const [doneList, setDoneList] = useState([]);
@@ -26,7 +47,8 @@ function App() {
   const [staffList, setStaffList] = useState([]);
   const [tagList, setTagList] = useState([]);
   const [currentProject, setCurrentProject] = useState(0);
-  const [currentTab,setCurrentTab]=useState("project")
+  const [currentTab,setCurrentTab]=useState("project");
+  const [isLoading, setIsLoading] = useState(true);
   const updaters = {
     [COLUMN_KEY_TODO]: setTodoList,
     [COLUMN_KEY_ONGOING]: setOngoingList,
@@ -42,16 +64,10 @@ function App() {
       ),
     );
   };
-  const [isLoading, setIsLoading] = useState(true);
   useEffect(
     () => {
-      let KanbanData = fakeData;
-      const data = window.localStorage.getItem(DATA_STORE_KEY);
-      if (!data) {
-        window.localStorage.setItem(DATA_STORE_KEY, JSON.stringify(KanbanData));
-      } else {
-        KanbanData = JSON.parse(data);
-      }
+      store.dispatch({type:"READ"});
+      let KanbanData=store.getState().data;
       setProjectList(KanbanData.map((item) => item.name));
       setTodoList(KanbanData[currentProject].todolist);
       setOngoingList(KanbanData[currentProject].ongoinglist);
@@ -77,14 +93,7 @@ function App() {
       stafflist:staffList,
       taglist:tagList,
     };
-    let data = window.localStorage.getItem(DATA_STORE_KEY);
-    if (data) {
-      data = JSON.parse(data);
-      data[currentProject] = updatedProject;
-    } else {
-      data = [updatedProject];
-    }
-    window.localStorage.setItem(DATA_STORE_KEY, JSON.stringify(data));
+    store.dispatch({type:"WRITE",payload:{currentProject:currentProject,updatedProject:updatedProject}});
   };
 
   return (
